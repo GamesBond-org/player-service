@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { createClient } = require("redis");
 const { MongoClient, ObjectId } = require("mongodb");
 
 dotenv.config();
@@ -9,9 +8,6 @@ const app = express();
 const PORT = process.env.PORT || 4002;
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
-
-const redis = createClient({ url: process.env.REDIS_URL || "redis://redis:6379" });
-redis.connect().catch(console.error);
 
 const mongo = new MongoClient(process.env.MONGO_URL || "mongodb://mongo:27017");
 let matches, events, lfp;
@@ -21,11 +17,7 @@ app.get("/health", (_, res) => res.json({ ok: true, service: "player-service" })
 // Player discovery
 app.get("/players/search", async (req, res) => {
   const { sport = "", location = "", skillLevel = "" } = req.query;
-  const key = `search:${sport}:${location}:${skillLevel}`;
-  const cached = await redis.get(key);
-  if (cached) return res.json(JSON.parse(cached));
   const payload = { message: "Player discovery index placeholder", filters: req.query };
-  await redis.setEx(key, 60, JSON.stringify(payload));
   res.json(payload);
 });
 
