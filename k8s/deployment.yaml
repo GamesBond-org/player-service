@@ -25,7 +25,7 @@ spec:
         - containerPort: 4002
         envFrom:
         - configMapRef:
-            name: player-service-config
+            name: player-service-devconfig
         - secretRef:
             name: player-service-secret
         resources:
